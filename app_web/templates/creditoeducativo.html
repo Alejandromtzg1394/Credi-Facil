@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Crédito Fácil - Crédito Educativo</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Estilos personalizados -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body class="bg-light">
+
+   <!-- ========== HEADER ========== -->
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary px-3">
+
+            <!-- Botón de volver -->
+            <button class="btn btn-outline-light me-2" onclick="window.history.back()">
+                <img src="{{ url_for('static', filename='img/flecha.png') }}" alt="Volver" style="height: 24px;">
+            </button>
+
+            <!-- Contenedor de marca y botones -->
+            <div class="ms-auto d-flex align-items-center gap-3">
+                <a class="navbar-brand fw-bold text-white mb-0" href="{{ url_for('inicio_home') }}">Credi Fácil</a>
+
+                {% if 'usuario' in session %}
+                    <a href="{{ url_for('perfil') }}" class="btn btn-light">Perfil</a>
+                    <a href="{{ url_for('logout') }}" class="btn btn-danger">Cerrar Sesión</a>
+                {% else %}
+                    <a href="{{ url_for('login_home') }}" class="btn btn-light">Iniciar sesión</a>
+                    <a href="{{ url_for('registro') }}" class="btn btn-light">Registrarse</a>
+                {% endif %}
+            </div>
+
+        </nav>
+    </header>
+
+    <!-- ========== CONTENIDO PRINCIPAL ========== -->
+    <main class="container py-5">
+        <div class="card shadow mx-auto" style="max-width: 600px;">
+            <div class="card-body text-center">
+                <h1 class="card-title text-primary">Crédito Educativo</h1>
+                <p class="card-text">Crédito Educativo dirigido a estudiantes de nivel Medio Superior, Técnico y Superior, que consiste en un complemento económico para cubrir conceptos de inscripción, colegiatura o sostenimiento, durante el tiempo oficial del programa educativo. </p>
+                <div class="d-grid gap-2 mt-4">
+                    <a href="{{ url_for('consulta_credito') }}" class="btn btn-success btn-lg">Cotizar</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

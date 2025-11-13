@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Perfil de Usuario</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- Estilos personalizados -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+</head>
+<body class="bg-light">
+
+<header>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary px-3">
+        <button class="btn btn-outline-light me-2" onclick="window.history.back()">
+            <img src="{{ url_for('static', filename='img/flecha.png') }}" alt="Volver" style="height: 24px;">
+        </button>
+        <div class="ms-auto d-flex align-items-center gap-3">
+            <a class="navbar-brand fw-bold text-white mb-0" href="{{ url_for('inicio_home') }}">Credi Fácil</a>
+            <a href="{{ url_for('logout') }}" class="btn btn-danger">Cerrar Sesión</a>
+        </div>
+    </nav>
+</header>
+
+<main class="container py-5">
+
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <h1 class="text-center text-primary mb-4">Perfil {{ session['usuario'] }}</h1>
+
+    <!-- Datos de Usuario -->
+    <div class="alert alert-info mb-4">
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>ID</th><th>Nombre</th><th>Apellido paterno</th>
+                        <th>Apellido materno</th><th>Edad</th><th>Ingreso mensual</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for u in datos %}
+                    <tr>
+                        <td>{{ u.id }}</td>
+                        <td>{{ u.nombre }}</td>
+                        <td>{{ u.apellido_paterno }}</td>
+                        <td>{{ u.apellido_materno }}</td>
+                        <td>{{ u.edad }} años</td>
+                        <!--<td>${{ "%.2f"|format(u.ingreso_mensual) }}</td>-->
+                        <td>{{ u.ingreso_mensual | moneda }}</td>
+
+                        <td>
+                          <a href="{{ url_for('editar_usuario', id=u.id) }}"
+                             class="btn btn-sm btn-warning">Editar Perfil</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Resultado de Cotización -->
+    <div class="alert alert-info mb-4">
+        <h2 class="h5 mb-3">Resultado de tu cotización</h2>
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Monto aprobado</th><th>Tasa de interés</th>
+                        <th>Total a pagar</th><th>Plazo</th>
+                        <th>Pago mensual</th><th>Pago Total</th><th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in datoscredito %}
+                    <tr>
+                        <td>{{ c.monto_credito | moneda }} MXN</td>
+                        <td>{{ "%.1f"|format(c.tasa_interes*100) }}% anual</td>
+                        <td>{{ c.total_credito_con_interes | moneda }} MXN</td>
+                        <td>{{ c.plazo_meses }} meses</td>
+                        <td>{{ c.pago_mensual | moneda }} MXN</td>
+                        <td>{{ c.total_credito_con_interes | moneda }} MXN</td>
+                        <td>
+                            <a href="{{ url_for('pago_total', id_usuario=session['usuario_id']) }}"
+                               class="btn btn-sm btn-danger">Pagar todos</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Pagos Programados -->
+    <div class="alert alert-info mb-4">
+        <h2 class="h5 mb-3">Pagos Programados</h2>
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>ID de pago</th><th>Fecha</th><th>Monto</th>
+                        <th>Estado</th><th>Pagar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in pagos %}
+                    <tr>
+                        <td>{{ p.id_pago }}</td>
+                        <td>{{ p.fecha_pago.strftime('%d/%m/%Y') }}</td>
+                        <td>{{ p.monto | moneda }}</td>
+                        <td class="{% if p.estado_pago=='pendiente' %}bg-danger text-white{% else %}bg-success text-white{% endif %}">
+                            {{ p.estado_pago }}
+                        </td>
+                        <td>
+                            {% if p.estado_pago=='pendiente' %}
+                              <a href="{{ url_for('pagar_pago', id=p.id_pago) }}"
+                                 class="btn btn-sm btn-danger">Pagar</a>
+                            {% else %}
+                              <span class="text-muted">Pagado</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</main>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
